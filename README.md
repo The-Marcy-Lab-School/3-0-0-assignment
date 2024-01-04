@@ -41,7 +41,7 @@ resolvedWrapper(10).then(console.log)
 The other side of the promise coin is rejection. Let's write a function that takes in a string message, and rejects with a [new Error instance](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error) with the given string as the error's message. You can use either the `new Promise` or `.reject` shortcut, but make sure you understand both!
 
 ## value vs Error() constructor
-Why are we rejecting with an error instead of just a value? Because it's best practice! Don't *throw* a new error, that's bad, just return a new instance of an error. Make sure to check the docs if you forget how to make a new error.
+Why are we rejecting with an error instead of just a value? Because it's best practice! Don't *throw* a new error, that's bad, just return a new instance of an error. Make sure to check the [Error docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error) if you forget how to make a new error.
 
 ```js
 resolvedWrapper('Oh no!')
@@ -50,20 +50,23 @@ resolvedWrapper('Oh no!')
 ```
 
 # Question 3: handleResolvedPromise
-OK, we've made promises, but how do we deal with them? Write a function `handleResolvedPromise`. All it does is take in a promise and using `.then`, grab the promise's resolved value, console.log it, and then return it!
+OK, we've made promises, but how do we deal with them? Write a function `handleResolvedPromise`. All it should do is take in a promise and using `.then`, grab the promise's resolved value, console.log it, and then return it!
 
 ```js
 handleResolvedPromise(Promise.resolve('yo'))
-  .then(val => val)
-// logs "yo"
-// and we still have access to "yo" since it's returned
+// Logs "yo"
+
+handleResolvedPromise(Promise.resolve('yo'))
+  .then(val => console.log(`we still have ${val}`))
+// Logs "yo" and "we still have yo"
+// We still have access to "yo" since it's also returned as a Promise
 ```
 
 # Question 4: handleResolvedOrRejectedPromise
 Write a new function `handleResolvedOrRejectedPromise`. It also takes in a promise, but this time let's handle any possible rejections as well.
 
 If the passed in promise resolves, handle it with `.then`, the behavior should be identical to `handleResolvedPromise`. However, if the passed in promise rejects your function needs to:
-- log out "Your error message was: [Error's message]"
+- log with `console.error` the message `"Your error message was: [Error's message]"`
 - return `null`
 
 **Do not just log the error object itself! Use the `.message` property!**
@@ -93,15 +96,18 @@ setTimeout(myCallback, 1000);
 
 That's cool and all, but even though it's asynchronous code, it's not a promise.
 
-Your mission is to use `setTimeout` to create an asynchronous function `pauseForMs` that takes in a number of milliseconds. To do this, you must convert `setTimeout` into a promise. `pauseForMs` won't resolve a value, but it *will* resolve so we can latch onto and wait for it with `.then`. No rejections necessary!
+Your mission is to create an asynchronous function `pauseForMs` that takes in a number of milliseconds and returns a promise that resolves after the given number of milliseconds.  This promise will never reject! For example: 
 
 ```js
-// this logs after a second passes
+// pauseForMs should return a promise that resolves after 1000 milliseconds (1 second)
+// at which point the `.then()` callback will execute and print "it's been a second!"
 pauseForMs(1000)
   .then(() => {
     console.log("It's been a second!");
   });
 ```
+
+To do this, you must wrap `setTimeout` in a promise. The promise does not need to resolve to any particular value, but it *must* resolve after the time is up so that we can execute code after using `.then()`
 
 # Question 6 - return4RandomColors MODIFY
 As we talked about earlier, callback hell is when you have to nest many callback functions, and it's the main motivation for making promises in the first place.
@@ -148,7 +154,7 @@ crypto.randomFill(new Uint8Array(3), (err, buffer) => {
   ...
 });
 ```
-It takes 2 arguments, a buffer structure (here an array with 3 numbers 0-255 in it), and a callback function. If there's an error it'll be the first argument, if there's no error `err` will equal `null` and `buffer` will have the array of numbers in it. So far so good?
+It takes 2 arguments, a buffer structure (here, an array with 3 numbers between 0-255 in it, each representing a color), and a callback function. If there's an error it'll be the first argument of the callback, `err`. If there's no error, `err` will equal `null` and `buffer` will have the array of numbers in it. So far so good?
 
 Then, it looks like we convert the buffer into an array by spreading it, and then passing it into a helper function that turns it into an RGB string.
 
@@ -201,5 +207,3 @@ return4RandomColors().then(console.log)
 
 # Bonus
 After you've gotten your tests passing and answered all your short answers, try researching `async/await`. **Don't use it on this assignment** (we want to see if you *get* the fundamentals first), but it's a modern way of writing promises with the `async` and `await` keywords. We'll use them later this week, but you can start reading about them now to get a leg up!
-
-
