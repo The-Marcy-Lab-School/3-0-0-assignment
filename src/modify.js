@@ -30,5 +30,7 @@ const return4RandomColors = () => {
 return4RandomColors().then(console.log);
 
 module.exports = {
+  numsToRGBColor,
+  getRandomBytes,
   return4RandomColors,
 };
